@@ -5,6 +5,10 @@ struct ItemsView: View {
     @StateObject private var viewModel: ItemsViewModel
     @State private var showingAddItem = false
     @State private var newItemText = ""
+    @State private var suggestions: [ProductSuggestion] = []
+    @State private var selectedSuggestion: ProductSuggestion?
+    @State private var itemQuantity: Int = 1
+    @State private var itemUnit: String = ""
     @FocusState private var isInputFocused: Bool
 
     init(list: ShoppingListEntity) {
@@ -122,45 +126,134 @@ struct ItemsView: View {
     // MARK: - Quick Add Bar
 
     private var quickAddBar: some View {
-        HStack(spacing: 12) {
-            HStack {
-                Image(systemName: "plus.circle.fill")
-                    .foregroundColor(.accentColor)
+        VStack(spacing: 0) {
+            // Suggestions list
+            if !suggestions.isEmpty && isInputFocused {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(suggestions) { suggestion in
+                            Button {
+                                selectSuggestion(suggestion)
+                            } label: {
+                                HStack(spacing: 6) {
+                                    let category = CategoryDetector.shared.detectCategory(for: suggestion.name)
+                                    Text(category.icon)
+                                        .font(.caption)
+                                    Text(suggestion.name)
+                                        .font(.subheadline)
+                                        .lineLimit(1)
+                                }
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                                .background(Color(.systemGray5))
+                                .cornerRadius(16)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+                }
+                .background(Color(.systemBackground).opacity(0.95))
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
 
-                TextField("Добавить товар...", text: $newItemText)
-                    .focused($isInputFocused)
-                    .submitLabel(.done)
-                    .onSubmit {
-                        addQuickItem()
+            // Quantity selector (when suggestion selected)
+            if selectedSuggestion != nil {
+                HStack(spacing: 16) {
+                    Text("Количество:")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+
+                    HStack(spacing: 0) {
+                        Button {
+                            if itemQuantity > 1 { itemQuantity -= 1 }
+                            HapticManager.shared.impact(.light)
+                        } label: {
+                            Image(systemName: "minus.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(itemQuantity > 1 ? .accentColor : .gray)
+                        }
+                        .disabled(itemQuantity <= 1)
+
+                        Text("\(itemQuantity)")
+                            .font(.title3.monospacedDigit().bold())
+                            .frame(minWidth: 40)
+
+                        Button {
+                            if itemQuantity < 99 { itemQuantity += 1 }
+                            HapticManager.shared.impact(.light)
+                        } label: {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.accentColor)
+                        }
                     }
 
-                if !newItemText.isEmpty {
+                    Text(itemUnit)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .frame(minWidth: 30)
+
+                    Spacer()
+
                     Button {
-                        newItemText = ""
+                        clearSelection()
                     } label: {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundColor(.secondary)
                     }
                 }
+                .padding(.horizontal)
+                .padding(.vertical, 10)
+                .background(Color(.systemGray6))
+                .transition(.move(edge: .bottom).combined(with: .opacity))
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
 
-            if !newItemText.isEmpty {
-                Button {
-                    addQuickItem()
-                } label: {
-                    Image(systemName: "arrow.up.circle.fill")
-                        .font(.title2)
+            // Input bar
+            HStack(spacing: 12) {
+                HStack {
+                    Image(systemName: "plus.circle.fill")
                         .foregroundColor(.accentColor)
+
+                    TextField("Добавить товар...", text: $newItemText)
+                        .focused($isInputFocused)
+                        .submitLabel(.done)
+                        .onSubmit {
+                            addQuickItem()
+                        }
+                        .onChange(of: newItemText) { newValue in
+                            updateSuggestions(for: newValue)
+                        }
+
+                    if !newItemText.isEmpty {
+                        Button {
+                            clearInput()
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(.secondary)
+                        }
+                    }
                 }
-                .transition(.scale.combined(with: .opacity))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 10)
+                .background(.ultraThinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                if !newItemText.isEmpty || selectedSuggestion != nil {
+                    Button {
+                        addQuickItem()
+                    } label: {
+                        Image(systemName: "arrow.up.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.accentColor)
+                    }
+                    .transition(.scale.combined(with: .opacity))
+                }
             }
+            .padding(.horizontal)
+            .padding(.bottom, 8)
         }
-        .padding(.horizontal)
-        .padding(.bottom, 8)
         .background(
             LinearGradient(
                 colors: [.clear, Color(.systemBackground).opacity(0.9), Color(.systemBackground)],
@@ -170,6 +263,36 @@ struct ItemsView: View {
             .ignoresSafeArea()
         )
         .animation(.spring(response: 0.3), value: newItemText.isEmpty)
+        .animation(.spring(response: 0.3), value: suggestions.count)
+        .animation(.spring(response: 0.3), value: selectedSuggestion != nil)
+    }
+
+    private func updateSuggestions(for text: String) {
+        if selectedSuggestion != nil && text != selectedSuggestion?.name {
+            selectedSuggestion = nil
+        }
+        suggestions = ProductSuggestions.shared.suggestions(for: text)
+    }
+
+    private func selectSuggestion(_ suggestion: ProductSuggestion) {
+        HapticManager.shared.impact(.light)
+        newItemText = suggestion.name
+        selectedSuggestion = suggestion
+        itemQuantity = suggestion.defaultQuantity
+        itemUnit = suggestion.unit
+        suggestions = []
+    }
+
+    private func clearSelection() {
+        selectedSuggestion = nil
+        itemQuantity = 1
+        itemUnit = ""
+    }
+
+    private func clearInput() {
+        newItemText = ""
+        suggestions = []
+        clearSelection()
     }
 
     private func addQuickItem() {
@@ -178,10 +301,15 @@ struct ItemsView: View {
 
         HapticManager.shared.notification(.success)
         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-            _ = DataController.shared.addItem(to: viewModel.list, name: trimmed)
+            _ = DataController.shared.addItem(
+                to: viewModel.list,
+                name: trimmed,
+                quantity: itemQuantity,
+                unit: itemUnit.isEmpty ? nil : itemUnit
+            )
             viewModel.fetchItems()
         }
-        newItemText = ""
+        clearInput()
     }
 
     // MARK: - Progress View

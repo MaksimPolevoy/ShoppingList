@@ -17,6 +17,7 @@
 		1A0000141A000008 /* ItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000151A000008 /* ItemsView.swift */; };
 		1A0000161A000009 /* AddItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000171A000009 /* AddItemView.swift */; };
 		1A0000181A000010 /* CategoryDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000191A000010 /* CategoryDetector.swift */; };
+		1A0000801A000080 /* ProductSuggestions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000811A000081 /* ProductSuggestions.swift */; };
 		1A0000201A000011 /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000211A000011 /* DataController.swift */; };
 		1A0000221A000012 /* ShoppingListModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000231A000012 /* ShoppingListModel.xcdatamodeld */; };
 		1A0000241A000013 /* ListsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000251A000013 /* ListsViewModel.swift */; };
@@ -38,6 +39,7 @@
 		1A0000151A000008 /* ItemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemsView.swift; sourceTree = "<group>"; };
 		1A0000171A000009 /* AddItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemView.swift; sourceTree = "<group>"; };
 		1A0000191A000010 /* CategoryDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryDetector.swift; sourceTree = "<group>"; };
+		1A0000811A000081 /* ProductSuggestions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductSuggestions.swift; sourceTree = "<group>"; };
 		1A0000211A000011 /* DataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
 		1A0000251A000013 /* ListsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListsViewModel.swift; sourceTree = "<group>"; };
 		1A0000271A000014 /* ItemsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemsViewModel.swift; sourceTree = "<group>"; };
@@ -144,6 +146,7 @@
 			isa = PBXGroup;
 			children = (
 				1A0000191A000010 /* CategoryDetector.swift */,
+				1A0000811A000081 /* ProductSuggestions.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -235,6 +238,7 @@
 				1A0000141A000008 /* ItemsView.swift in Sources */,
 				1A0000161A000009 /* AddItemView.swift in Sources */,
 				1A0000181A000010 /* CategoryDetector.swift in Sources */,
+				1A0000801A000080 /* ProductSuggestions.swift in Sources */,
 				1A0000201A000011 /* DataController.swift in Sources */,
 				1A0000221A000012 /* ShoppingListModel.xcdatamodeld in Sources */,
 				1A0000241A000013 /* ListsViewModel.swift in Sources */,
