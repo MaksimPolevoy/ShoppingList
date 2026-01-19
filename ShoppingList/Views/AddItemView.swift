@@ -6,7 +6,32 @@ struct AddItemView: View {
     @FocusState private var isNameFocused: Bool
     @State private var suggestions: [ProductSuggestion] = []
 
-    private let units = ["шт", "кг", "г", "л", "мл", "уп", "пучок", ""]
+    private let units = ["шт", "г", "л", "мл", "уп", "пучок", ""]
+
+    // Step, min and max based on unit type
+    private var quantityStep: Int {
+        switch viewModel.newItemUnit {
+        case "г": return 100
+        case "мл": return 50
+        default: return 1
+        }
+    }
+
+    private var minQuantity: Int {
+        switch viewModel.newItemUnit {
+        case "г": return 100
+        case "мл": return 50
+        default: return 1
+        }
+    }
+
+    private var maxQuantity: Int {
+        switch viewModel.newItemUnit {
+        case "г": return 10000
+        case "мл": return 5000
+        default: return 99
+        }
+    }
 
     var body: some View {
         NavigationStack {
@@ -71,35 +96,41 @@ struct AddItemView: View {
 
                             HStack(spacing: 0) {
                                 Button {
-                                    if viewModel.newItemQuantity > 1 {
-                                        viewModel.newItemQuantity -= 1
+                                    let step = quantityStep
+                                    if viewModel.newItemQuantity > step {
+                                        viewModel.newItemQuantity -= step
+                                        HapticManager.shared.impact(.light)
+                                    } else if viewModel.newItemQuantity > minQuantity {
+                                        viewModel.newItemQuantity = minQuantity
                                         HapticManager.shared.impact(.light)
                                     }
                                 } label: {
                                     Image(systemName: "minus.circle.fill")
                                         .font(.title2)
-                                        .foregroundColor(viewModel.newItemQuantity > 1 ? .accentColor : .gray)
+                                        .foregroundColor(viewModel.newItemQuantity > minQuantity ? .accentColor : .gray)
                                 }
                                 .buttonStyle(.plain)
-                                .disabled(viewModel.newItemQuantity <= 1)
+                                .disabled(viewModel.newItemQuantity <= minQuantity)
 
                                 TextField("", value: $viewModel.newItemQuantity, format: .number)
                                     .keyboardType(.numberPad)
                                     .multilineTextAlignment(.center)
-                                    .frame(width: 50)
+                                    .frame(width: 60)
                                     .font(.title3.monospacedDigit().bold())
 
                                 Button {
-                                    if viewModel.newItemQuantity < 999 {
-                                        viewModel.newItemQuantity += 1
+                                    let step = quantityStep
+                                    if viewModel.newItemQuantity < maxQuantity {
+                                        viewModel.newItemQuantity += step
                                         HapticManager.shared.impact(.light)
                                     }
                                 } label: {
                                     Image(systemName: "plus.circle.fill")
                                         .font(.title2)
-                                        .foregroundColor(.accentColor)
+                                        .foregroundColor(viewModel.newItemQuantity < maxQuantity ? .accentColor : .gray)
                                 }
                                 .buttonStyle(.plain)
+                                .disabled(viewModel.newItemQuantity >= maxQuantity)
                             }
                         }
 
@@ -159,13 +190,13 @@ struct AddItemView: View {
             ("Яйца", "шт", 10),
             ("Масло сливочное", "г", 200),
             ("Сыр", "г", 200),
-            ("Курица", "кг", 1),
-            ("Картофель", "кг", 1),
-            ("Лук", "кг", 1),
-            ("Помидоры", "кг", 1),
-            ("Огурцы", "кг", 1),
-            ("Яблоки", "кг", 1),
-            ("Бананы", "кг", 1)
+            ("Курица", "г", 1000),
+            ("Картофель", "г", 1000),
+            ("Лук", "г", 500),
+            ("Помидоры", "г", 500),
+            ("Огурцы", "г", 500),
+            ("Яблоки", "г", 1000),
+            ("Бананы", "г", 1000)
         ]
 
         return LazyVGrid(columns: [

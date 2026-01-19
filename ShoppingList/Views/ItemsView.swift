@@ -11,6 +11,31 @@ struct ItemsView: View {
     @State private var itemUnit: String = ""
     @FocusState private var isInputFocused: Bool
 
+    // Step, min and max based on unit type
+    private var quantityStep: Int {
+        switch itemUnit {
+        case "г": return 100
+        case "мл": return 50
+        default: return 1
+        }
+    }
+
+    private var minQuantity: Int {
+        switch itemUnit {
+        case "г": return 100
+        case "мл": return 50
+        default: return 1
+        }
+    }
+
+    private var maxQuantity: Int {
+        switch itemUnit {
+        case "г": return 10000
+        case "мл": return 5000
+        default: return 99
+        }
+    }
+
     init(list: ShoppingListEntity) {
         _viewModel = StateObject(wrappedValue: ItemsViewModel(list: list))
     }
@@ -167,27 +192,34 @@ struct ItemsView: View {
 
                     HStack(spacing: 0) {
                         Button {
-                            if itemQuantity > 1 { itemQuantity -= 1 }
+                            if itemQuantity > quantityStep {
+                                itemQuantity -= quantityStep
+                            } else if itemQuantity > minQuantity {
+                                itemQuantity = minQuantity
+                            }
                             HapticManager.shared.impact(.light)
                         } label: {
                             Image(systemName: "minus.circle.fill")
                                 .font(.title2)
-                                .foregroundColor(itemQuantity > 1 ? .accentColor : .gray)
+                                .foregroundColor(itemQuantity > minQuantity ? .accentColor : .gray)
                         }
-                        .disabled(itemQuantity <= 1)
+                        .disabled(itemQuantity <= minQuantity)
 
                         Text("\(itemQuantity)")
                             .font(.title3.monospacedDigit().bold())
-                            .frame(minWidth: 40)
+                            .frame(minWidth: 50)
 
                         Button {
-                            if itemQuantity < 99 { itemQuantity += 1 }
+                            if itemQuantity < maxQuantity {
+                                itemQuantity += quantityStep
+                            }
                             HapticManager.shared.impact(.light)
                         } label: {
                             Image(systemName: "plus.circle.fill")
                                 .font(.title2)
-                                .foregroundColor(.accentColor)
+                                .foregroundColor(itemQuantity < maxQuantity ? .accentColor : .gray)
                         }
+                        .disabled(itemQuantity >= maxQuantity)
                     }
 
                     Text(itemUnit)
