@@ -281,6 +281,31 @@ class ProductSuggestions {
         ("Фольга", "уп", 1),
     ]
 
+    // UserDefaults key for custom products
+    private let customProductsKey = "CustomProducts"
+
+    // Custom products added by user
+    private var customProducts: [(name: String, unit: String, defaultQty: Int)] {
+        get {
+            guard let data = UserDefaults.standard.data(forKey: customProductsKey),
+                  let decoded = try? JSONDecoder().decode([CustomProduct].self, from: data) else {
+                return []
+            }
+            return decoded.map { ($0.name, $0.unit, $0.defaultQty) }
+        }
+        set {
+            let encoded = newValue.map { CustomProduct(name: $0.0, unit: $0.1, defaultQty: $0.2) }
+            if let data = try? JSONEncoder().encode(encoded) {
+                UserDefaults.standard.set(data, forKey: customProductsKey)
+            }
+        }
+    }
+
+    // All products (built-in + custom)
+    private var allProducts: [(name: String, unit: String, defaultQty: Int)] {
+        products + customProducts
+    }
+
     private init() {}
 
     /// Get suggestions matching the input text
@@ -290,7 +315,7 @@ class ProductSuggestions {
 
         var results: [(product: (name: String, unit: String, defaultQty: Int), score: Int)] = []
 
-        for product in products {
+        for product in allProducts {
             let productLower = product.name.lowercased()
 
             // Exact match at start gets highest score
@@ -312,13 +337,40 @@ class ProductSuggestions {
         }
     }
 
+    /// Check if product exists in suggestions
+    func productExists(_ name: String) -> Bool {
+        let lowercased = name.lowercased().trimmingCharacters(in: .whitespaces)
+        return allProducts.contains { $0.name.lowercased() == lowercased }
+    }
+
+    /// Add a new custom product if it doesn't already exist
+    func addCustomProduct(name: String, unit: String, quantity: Int) {
+        let trimmedName = name.trimmingCharacters(in: .whitespaces)
+        guard !trimmedName.isEmpty else { return }
+
+        // Check if product already exists
+        if productExists(trimmedName) { return }
+
+        // Add to custom products
+        var current = customProducts
+        current.append((trimmedName, unit, quantity))
+        customProducts = current
+    }
+
     /// Get all products in a category
     func products(in categoryKeyword: String) -> [ProductSuggestion] {
         let detector = CategoryDetector.shared
-        return products
+        return allProducts
             .filter { detector.detectCategory(for: $0.name).keywords.contains(where: { $0.contains(categoryKeyword) }) }
             .map { ProductSuggestion(name: $0.name, unit: $0.unit, defaultQuantity: $0.defaultQty) }
     }
+}
+
+// Helper struct for encoding custom products
+private struct CustomProduct: Codable {
+    let name: String
+    let unit: String
+    let defaultQty: Int
 }
 
 struct ProductSuggestion: Identifiable, Hashable {

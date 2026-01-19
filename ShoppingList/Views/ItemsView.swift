@@ -11,6 +11,11 @@ struct ItemsView: View {
     @State private var itemUnit: String = ""
     @FocusState private var isInputFocused: Bool
 
+    // Edit item state
+    @State private var editingItem: ShoppingItemEntity?
+    @State private var editQuantity: Int = 1
+    @State private var editUnit: String = ""
+
     // Step, min and max based on unit type
     private var quantityStep: Int {
         switch itemUnit {
@@ -30,6 +35,31 @@ struct ItemsView: View {
 
     private var maxQuantity: Int {
         switch itemUnit {
+        case "г": return 10000
+        case "мл": return 5000
+        default: return 99
+        }
+    }
+
+    // Edit mode step/min/max based on editUnit
+    private var editQuantityStep: Int {
+        switch editUnit {
+        case "г": return 100
+        case "мл": return 50
+        default: return 1
+        }
+    }
+
+    private var editMinQuantity: Int {
+        switch editUnit {
+        case "г": return 100
+        case "мл": return 50
+        default: return 1
+        }
+    }
+
+    private var editMaxQuantity: Int {
+        switch editUnit {
         case "г": return 10000
         case "мл": return 5000
         default: return 99
@@ -57,6 +87,11 @@ struct ItemsView: View {
                                     HapticManager.shared.impact(.light)
                                     viewModel.deleteItem(item)
                                 }
+                            }, onTap: {
+                                HapticManager.shared.impact(.light)
+                                editQuantity = Int(item.quantity)
+                                editUnit = item.unit ?? ""
+                                editingItem = item
                             })
                         }
                     } header: {
@@ -83,6 +118,11 @@ struct ItemsView: View {
                                 withAnimation {
                                     viewModel.deleteItem(item)
                                 }
+                            }, onTap: {
+                                HapticManager.shared.impact(.light)
+                                editQuantity = Int(item.quantity)
+                                editUnit = item.unit ?? ""
+                                editingItem = item
                             })
                         }
                     } header: {
@@ -137,6 +177,21 @@ struct ItemsView: View {
         }
         .sheet(isPresented: $showingAddItem) {
             AddItemView(viewModel: viewModel)
+        }
+        .sheet(item: $editingItem) { item in
+            EditItemSheet(
+                item: item,
+                quantity: $editQuantity,
+                unit: $editUnit,
+                quantityStep: editQuantityStep,
+                minQuantity: editMinQuantity,
+                maxQuantity: editMaxQuantity,
+                onSave: {
+                    viewModel.updateItem(item, quantity: editQuantity, unit: editUnit.isEmpty ? nil : editUnit)
+                    editingItem = nil
+                }
+            )
+            .presentationDetents([.height(280)])
         }
         .overlay {
             if viewModel.itemGroups.isEmpty && viewModel.checkedItems.isEmpty {
@@ -339,6 +394,14 @@ struct ItemsView: View {
                 quantity: itemQuantity,
                 unit: itemUnit.isEmpty ? nil : itemUnit
             )
+
+            // Save to autocomplete if new product
+            ProductSuggestions.shared.addCustomProduct(
+                name: trimmed,
+                unit: itemUnit,
+                quantity: itemQuantity
+            )
+
             viewModel.fetchItems()
         }
         clearInput()
@@ -428,6 +491,7 @@ struct ItemRowView: View {
     let item: ShoppingItemEntity
     let onToggle: () -> Void
     let onDelete: () -> Void
+    var onTap: (() -> Void)? = nil
 
     @State private var isPressed = false
 
@@ -486,6 +550,9 @@ struct ItemRowView: View {
         }
         .padding(.vertical, 4)
         .contentShape(Rectangle())
+        .onTapGesture {
+            onTap?()
+        }
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
             Button(role: .destructive) {
                 onDelete()
@@ -528,6 +595,99 @@ struct ItemRowView: View {
             Capsule()
                 .fill(source == "telegram" ? Color.blue.opacity(0.1) : Color.purple.opacity(0.1))
         )
+    }
+}
+
+// MARK: - Edit Item Sheet
+
+struct EditItemSheet: View {
+    let item: ShoppingItemEntity
+    @Binding var quantity: Int
+    @Binding var unit: String
+    let quantityStep: Int
+    let minQuantity: Int
+    let maxQuantity: Int
+    let onSave: () -> Void
+
+    @Environment(\.dismiss) private var dismiss
+
+    private let units = ["шт", "г", "л", "мл", "уп", "пучок", ""]
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 20) {
+                // Item name
+                Text(item.name ?? "")
+                    .font(.title2.weight(.semibold))
+                    .padding(.top)
+
+                // Quantity selector
+                HStack(spacing: 20) {
+                    Button {
+                        if quantity > quantityStep {
+                            quantity -= quantityStep
+                        } else if quantity > minQuantity {
+                            quantity = minQuantity
+                        }
+                        HapticManager.shared.impact(.light)
+                    } label: {
+                        Image(systemName: "minus.circle.fill")
+                            .font(.system(size: 44))
+                            .foregroundColor(quantity > minQuantity ? .accentColor : .gray)
+                    }
+                    .disabled(quantity <= minQuantity)
+
+                    VStack(spacing: 4) {
+                        Text("\(quantity)")
+                            .font(.system(size: 48, weight: .bold, design: .rounded))
+                            .monospacedDigit()
+                        Text(unit.isEmpty ? "шт" : unit)
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+                    }
+                    .frame(minWidth: 120)
+
+                    Button {
+                        if quantity < maxQuantity {
+                            quantity += quantityStep
+                        }
+                        HapticManager.shared.impact(.light)
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 44))
+                            .foregroundColor(quantity < maxQuantity ? .accentColor : .gray)
+                    }
+                    .disabled(quantity >= maxQuantity)
+                }
+
+                // Unit picker
+                Picker("Единица", selection: $unit) {
+                    ForEach(units, id: \.self) { u in
+                        Text(u.isEmpty ? "—" : u).tag(u)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
+
+                Spacer()
+            }
+            .navigationTitle("Изменить количество")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Отмена") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Сохранить") {
+                        HapticManager.shared.notification(.success)
+                        onSave()
+                    }
+                    .fontWeight(.semibold)
+                }
+            }
+        }
     }
 }
 

@@ -76,6 +76,13 @@ class ItemsViewModel: ObservableObject {
             unit: unit.isEmpty ? nil : unit
         )
 
+        // Save to autocomplete if new product
+        ProductSuggestions.shared.addCustomProduct(
+            name: trimmedName,
+            unit: unit,
+            quantity: newItemQuantity
+        )
+
         // Reset form
         newItemName = ""
         newItemQuantity = 1
@@ -92,6 +99,11 @@ class ItemsViewModel: ObservableObject {
 
     func deleteItem(_ item: ShoppingItemEntity) {
         dataController.deleteItem(item)
+        fetchItems()
+    }
+
+    func updateItem(_ item: ShoppingItemEntity, quantity: Int, unit: String?) {
+        dataController.updateItem(item, quantity: quantity, unit: unit)
         fetchItems()
     }
 

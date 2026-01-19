@@ -121,6 +121,13 @@ class DataController: ObservableObject {
         save()
     }
 
+    func updateItem(_ item: ShoppingItemEntity, quantity: Int, unit: String?) {
+        item.quantity = Int32(quantity)
+        item.unit = unit
+        item.updatedAt = Date()
+        save()
+    }
+
     func deleteItem(_ item: ShoppingItemEntity) {
         let context = container.viewContext
         context.delete(item)
