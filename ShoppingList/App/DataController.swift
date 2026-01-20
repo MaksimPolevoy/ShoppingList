@@ -155,6 +155,26 @@ class DataController: ObservableObject {
         }
     }
 
+    func fetchItemCounts(for list: ShoppingListEntity) -> (remaining: Int, checked: Int) {
+        let context = container.viewContext
+
+        // Use COUNT queries directly to bypass object cache
+        let remainingRequest: NSFetchRequest<ShoppingItemEntity> = ShoppingItemEntity.fetchRequest()
+        remainingRequest.predicate = NSPredicate(format: "list == %@ AND isChecked == NO", list)
+
+        let checkedRequest: NSFetchRequest<ShoppingItemEntity> = ShoppingItemEntity.fetchRequest()
+        checkedRequest.predicate = NSPredicate(format: "list == %@ AND isChecked == YES", list)
+
+        do {
+            let remaining = try context.count(for: remainingRequest)
+            let checked = try context.count(for: checkedRequest)
+            return (remaining, checked)
+        } catch {
+            print("Error fetching item counts: \(error)")
+            return (0, 0)
+        }
+    }
+
     // MARK: - Preview Support
 
     static var preview: DataController = {

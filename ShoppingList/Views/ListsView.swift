@@ -1,12 +1,18 @@
 import SwiftUI
 
+extension Notification.Name {
+    static let shoppingListDataChanged = Notification.Name("shoppingListDataChanged")
+}
+
 struct ListsView: View {
     @StateObject private var viewModel = ListsViewModel()
     @State private var showingAddList = false
     @State private var newListName = ""
+    @State private var navigationPath = NavigationPath()
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             Group {
                 if viewModel.lists.isEmpty {
                     emptyStateView
@@ -15,6 +21,9 @@ struct ListsView: View {
                 }
             }
             .navigationTitle("Списки покупок")
+            .navigationDestination(for: ShoppingListEntity.self) { list in
+                ItemsView(list: list)
+            }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
@@ -37,6 +46,22 @@ struct ListsView: View {
             }
             .onAppear {
                 viewModel.fetchLists()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .shoppingListDataChanged)) { _ in
+                DispatchQueue.main.async {
+                    viewModel.fetchLists()
+                }
+            }
+            .onChange(of: navigationPath) { newPath in
+                // Refresh when navigating back (path becomes empty)
+                if newPath.isEmpty {
+                    viewModel.fetchLists()
+                }
+            }
+            .onChange(of: scenePhase) { newPhase in
+                if newPhase == .active {
+                    viewModel.fetchLists()
+                }
             }
         }
     }
@@ -69,13 +94,14 @@ struct ListsView: View {
     private var listView: some View {
         List {
             ForEach(viewModel.lists, id: \.id) { list in
-                NavigationLink {
-                    ItemsView(list: list)
-                } label: {
+                NavigationLink(value: list) {
                     ListRowView(list: list, viewModel: viewModel)
                 }
             }
             .onDelete(perform: viewModel.deleteList)
+        }
+        .refreshable {
+            viewModel.fetchLists()
         }
     }
 
@@ -94,6 +120,11 @@ struct ListRowView: View {
     let list: ShoppingListEntity
     let viewModel: ListsViewModel
 
+    private var counts: (remaining: Int, checked: Int) {
+        guard let id = list.id else { return (0, 0) }
+        return viewModel.listCounts[id] ?? (0, 0)
+    }
+
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
@@ -101,8 +132,8 @@ struct ListRowView: View {
                     .font(.headline)
 
                 HStack(spacing: 8) {
-                    let remaining = viewModel.itemCount(for: list)
-                    let checked = viewModel.checkedCount(for: list)
+                    let remaining = counts.remaining
+                    let checked = counts.checked
 
                     if remaining > 0 {
                         Label("\(remaining) осталось", systemImage: "circle")
@@ -127,8 +158,8 @@ struct ListRowView: View {
             Spacer()
 
             // Progress indicator
-            let total = viewModel.totalCount(for: list)
-            let checked = viewModel.checkedCount(for: list)
+            let total = counts.remaining + counts.checked
+            let checked = counts.checked
             if total > 0 {
                 ZStack {
                     Circle()

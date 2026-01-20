@@ -41,31 +41,6 @@ struct ItemsView: View {
         }
     }
 
-    // Edit mode step/min/max based on editUnit
-    private var editQuantityStep: Int {
-        switch editUnit {
-        case "г": return 100
-        case "мл": return 50
-        default: return 1
-        }
-    }
-
-    private var editMinQuantity: Int {
-        switch editUnit {
-        case "г": return 100
-        case "мл": return 50
-        default: return 1
-        }
-    }
-
-    private var editMaxQuantity: Int {
-        switch editUnit {
-        case "г": return 10000
-        case "мл": return 5000
-        default: return 99
-        }
-    }
-
     init(list: ShoppingListEntity) {
         _viewModel = StateObject(wrappedValue: ItemsViewModel(list: list))
     }
@@ -183,23 +158,23 @@ struct ItemsView: View {
                 item: item,
                 quantity: $editQuantity,
                 unit: $editUnit,
-                quantityStep: editQuantityStep,
-                minQuantity: editMinQuantity,
-                maxQuantity: editMaxQuantity,
                 onSave: {
                     viewModel.updateItem(item, quantity: editQuantity, unit: editUnit.isEmpty ? nil : editUnit)
                     editingItem = nil
                 }
             )
-            .presentationDetents([.height(280)])
+            .presentationDetents([.height(300)])
         }
         .overlay {
-            if viewModel.itemGroups.isEmpty && viewModel.checkedItems.isEmpty {
+            if viewModel.itemGroups.isEmpty && viewModel.checkedItems.isEmpty && !isInputFocused && newItemText.isEmpty {
                 emptyStateView
             }
         }
         .onAppear {
             viewModel.fetchItems()
+        }
+        .onDisappear {
+            NotificationCenter.default.post(name: .shoppingListDataChanged, object: nil)
         }
     }
 
@@ -604,14 +579,36 @@ struct EditItemSheet: View {
     let item: ShoppingItemEntity
     @Binding var quantity: Int
     @Binding var unit: String
-    let quantityStep: Int
-    let minQuantity: Int
-    let maxQuantity: Int
     let onSave: () -> Void
 
     @Environment(\.dismiss) private var dismiss
 
     private let units = ["шт", "г", "л", "мл", "уп", "пучок", ""]
+
+    // Computed properties based on current unit
+    private var quantityStep: Int {
+        switch unit {
+        case "г": return 100
+        case "мл": return 50
+        default: return 1
+        }
+    }
+
+    private var minQuantity: Int {
+        switch unit {
+        case "г": return 100
+        case "мл": return 50
+        default: return 1
+        }
+    }
+
+    private var maxQuantity: Int {
+        switch unit {
+        case "г": return 10000
+        case "мл": return 5000
+        default: return 99
+        }
+    }
 
     var body: some View {
         NavigationStack {
@@ -645,7 +642,7 @@ struct EditItemSheet: View {
                             .font(.headline)
                             .foregroundColor(.secondary)
                     }
-                    .frame(minWidth: 120)
+                    .frame(minWidth: 150)
 
                     Button {
                         if quantity < maxQuantity {
@@ -668,6 +665,16 @@ struct EditItemSheet: View {
                 }
                 .pickerStyle(.segmented)
                 .padding(.horizontal)
+                .onChange(of: unit) { newUnit in
+                    // Adjust quantity when unit changes
+                    let newMin = newUnit == "г" ? 100 : (newUnit == "мл" ? 50 : 1)
+                    let newMax = newUnit == "г" ? 10000 : (newUnit == "мл" ? 5000 : 99)
+                    if quantity < newMin {
+                        quantity = newMin
+                    } else if quantity > newMax {
+                        quantity = newMax
+                    }
+                }
 
                 Spacer()
             }

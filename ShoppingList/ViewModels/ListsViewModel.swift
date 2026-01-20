@@ -4,6 +4,7 @@ import Combine
 
 class ListsViewModel: ObservableObject {
     @Published var lists: [ShoppingListEntity] = []
+    @Published var listCounts: [UUID: (remaining: Int, checked: Int)] = [:]
     @Published var showingAddList = false
     @Published var newListName = ""
 
@@ -15,7 +16,22 @@ class ListsViewModel: ObservableObject {
     }
 
     func fetchLists() {
+        // Reset context to force fresh data from store
+        let context = dataController.container.viewContext
+        context.reset()
+
+        // Fetch fresh lists
         lists = dataController.fetchLists()
+
+        // Compute counts using COUNT queries (bypasses object cache)
+        var counts: [UUID: (remaining: Int, checked: Int)] = [:]
+        for list in lists {
+            if let id = list.id {
+                let (remaining, checked) = dataController.fetchItemCounts(for: list)
+                counts[id] = (remaining, checked)
+            }
+        }
+        listCounts = counts
     }
 
     func createList() {
