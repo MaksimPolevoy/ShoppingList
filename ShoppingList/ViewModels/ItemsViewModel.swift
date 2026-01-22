@@ -2,7 +2,7 @@ import Foundation
 import CoreData
 import Combine
 
-struct ItemGroup: Identifiable {
+struct ShoppingItemGroup: Identifiable {
     let id: String
     let categoryName: String
     let categoryIcon: String
@@ -17,7 +17,7 @@ struct ItemGroup: Identifiable {
 }
 
 class ItemsViewModel: ObservableObject {
-    @Published var itemGroups: [ItemGroup] = []
+    @Published var itemGroups: [ShoppingItemGroup] = []
     @Published var checkedItems: [ShoppingItemEntity] = []
     @Published var showingAddItem = false
     @Published var newItemName = ""
@@ -60,7 +60,7 @@ class ItemsViewModel: ObservableObject {
 
         // Convert to array and sort by category order
         itemGroups = groups.map { key, value in
-            ItemGroup(categoryName: key, categoryIcon: value.icon, items: value.items.sorted { ($0.name ?? "") < ($1.name ?? "") })
+            ShoppingItemGroup(categoryName: key, categoryIcon: value.icon, items: value.items.sorted { ($0.name ?? "") < ($1.name ?? "") })
         }.sorted { $0.items.first?.categorySortOrder ?? 0 < $1.items.first?.categorySortOrder ?? 0 }
     }
 

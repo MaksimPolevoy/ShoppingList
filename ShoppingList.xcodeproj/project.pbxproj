@@ -17,7 +17,6 @@
 		1A0000141A000008 /* ItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000151A000008 /* ItemsView.swift */; };
 		1A0000161A000009 /* AddItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000171A000009 /* AddItemView.swift */; };
 		1A0000181A000010 /* CategoryDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000191A000010 /* CategoryDetector.swift */; };
-		1A0000801A000080 /* ProductSuggestions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000811A000081 /* ProductSuggestions.swift */; };
 		1A0000201A000011 /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000211A000011 /* DataController.swift */; };
 		1A0000221A000012 /* ShoppingListModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000231A000012 /* ShoppingListModel.xcdatamodeld */; };
 		1A0000241A000013 /* ListsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000251A000013 /* ListsViewModel.swift */; };
@@ -26,6 +25,19 @@
 		1A0000521A000051 /* ShoppingListEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000531A000051 /* ShoppingListEntity+CoreDataProperties.swift */; };
 		1A0000541A000052 /* ShoppingItemEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000551A000052 /* ShoppingItemEntity+CoreDataClass.swift */; };
 		1A0000561A000053 /* ShoppingItemEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000571A000053 /* ShoppingItemEntity+CoreDataProperties.swift */; };
+		1A0000801A000080 /* ProductSuggestions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000811A000081 /* ProductSuggestions.swift */; };
+		5F9B3D042F20CED30006BEC5 /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F9B3D022F20CED30006BEC5 /* RegisterView.swift */; };
+		5F9B3D052F20CED30006BEC5 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F9B3D012F20CED30006BEC5 /* ProfileView.swift */; };
+		5F9B3D062F20CED30006BEC5 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F9B3D002F20CED30006BEC5 /* LoginView.swift */; };
+		5F9B3D072F20CED30006BEC5 /* AuthRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F9B3CFF2F20CED30006BEC5 /* AuthRootView.swift */; };
+		5F9B3D092F20D6F40006BEC5 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F9B3D082F20D6F40006BEC5 /* AuthViewModel.swift */; };
+		5F9B3D0B2F20D8FB0006BEC5 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F9B3D0A2F20D8FB0006BEC5 /* AuthService.swift */; };
+		5F9B3D0D2F20D9060006BEC5 /* CloudSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F9B3D0C2F20D9060006BEC5 /* CloudSyncService.swift */; };
+		5F9B3D112F20D91C0006BEC5 /* SupabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F9B3D102F20D91C0006BEC5 /* SupabaseClient.swift */; };
+		5F9B3D132F20DA330006BEC5 /* CloudItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F9B3D122F20DA330006BEC5 /* CloudItemsView.swift */; };
+		5F9B3D152F20DEB90006BEC5 /* RealtimeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F9B3D0E2F20D9110006BEC5 /* RealtimeService.swift */; };
+		5F9B3D182F20E2750006BEC5 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 5F9B3D172F20E2750006BEC5 /* Supabase */; };
+		5F9B3D1A2F20E5D60006BEC5 /* ShareListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F9B3D192F20E5D60006BEC5 /* ShareListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,7 +51,6 @@
 		1A0000151A000008 /* ItemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemsView.swift; sourceTree = "<group>"; };
 		1A0000171A000009 /* AddItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemView.swift; sourceTree = "<group>"; };
 		1A0000191A000010 /* CategoryDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryDetector.swift; sourceTree = "<group>"; };
-		1A0000811A000081 /* ProductSuggestions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductSuggestions.swift; sourceTree = "<group>"; };
 		1A0000211A000011 /* DataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
 		1A0000251A000013 /* ListsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListsViewModel.swift; sourceTree = "<group>"; };
 		1A0000271A000014 /* ItemsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemsViewModel.swift; sourceTree = "<group>"; };
@@ -48,6 +59,20 @@
 		1A0000531A000051 /* ShoppingListEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ShoppingListEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		1A0000551A000052 /* ShoppingItemEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ShoppingItemEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
 		1A0000571A000053 /* ShoppingItemEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ShoppingItemEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		1A0000701A000070 /* ShoppingListModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShoppingListModel.xcdatamodel; sourceTree = "<group>"; };
+		1A0000811A000081 /* ProductSuggestions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductSuggestions.swift; sourceTree = "<group>"; };
+		5F9B3CFF2F20CED30006BEC5 /* AuthRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthRootView.swift; sourceTree = "<group>"; };
+		5F9B3D002F20CED30006BEC5 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		5F9B3D012F20CED30006BEC5 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		5F9B3D022F20CED30006BEC5 /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
+		5F9B3D082F20D6F40006BEC5 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		5F9B3D0A2F20D8FB0006BEC5 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		5F9B3D0C2F20D9060006BEC5 /* CloudSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncService.swift; sourceTree = "<group>"; };
+		5F9B3D0E2F20D9110006BEC5 /* RealtimeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeService.swift; sourceTree = "<group>"; };
+		5F9B3D102F20D91C0006BEC5 /* SupabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseClient.swift; sourceTree = "<group>"; };
+		5F9B3D122F20DA330006BEC5 /* CloudItemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudItemsView.swift; sourceTree = "<group>"; };
+		5F9B3D192F20E5D60006BEC5 /* ShareListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareListView.swift; sourceTree = "<group>"; };
+		5F9B3D1B2F2147B80006BEC5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +80,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5F9B3D182F20E2750006BEC5 /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +91,7 @@
 			isa = PBXGroup;
 			children = (
 				1A0000311A000018 /* ShoppingList */,
+				5F9B3D162F20E2750006BEC5 /* Frameworks */,
 				1A0000321A000019 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -72,6 +99,7 @@
 		1A0000311A000018 /* ShoppingList */ = {
 			isa = PBXGroup;
 			children = (
+				5F9B3D1B2F2147B80006BEC5 /* Info.plist */,
 				1A0000331A000020 /* App */,
 				1A0000341A000021 /* Models */,
 				1A0000351A000022 /* Views */,
@@ -102,17 +130,6 @@
 			path = App;
 			sourceTree = "<group>";
 		};
-		1A0000601A000060 /* CoreData */ = {
-			isa = PBXGroup;
-			children = (
-				1A0000511A000050 /* ShoppingListEntity+CoreDataClass.swift */,
-				1A0000531A000051 /* ShoppingListEntity+CoreDataProperties.swift */,
-				1A0000551A000052 /* ShoppingItemEntity+CoreDataClass.swift */,
-				1A0000571A000053 /* ShoppingItemEntity+CoreDataProperties.swift */,
-			);
-			path = CoreData;
-			sourceTree = "<group>";
-		};
 		1A0000341A000021 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -126,6 +143,9 @@
 		1A0000351A000022 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				5F9B3D192F20E5D60006BEC5 /* ShareListView.swift */,
+				5F9B3D122F20DA330006BEC5 /* CloudItemsView.swift */,
+				5F9B3D032F20CED30006BEC5 /* Auth */,
 				1A0000131A000007 /* ListsView.swift */,
 				1A0000151A000008 /* ItemsView.swift */,
 				1A0000171A000009 /* AddItemView.swift */,
@@ -136,6 +156,7 @@
 		1A0000361A000023 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				5F9B3D082F20D6F40006BEC5 /* AuthViewModel.swift */,
 				1A0000251A000013 /* ListsViewModel.swift */,
 				1A0000271A000014 /* ItemsViewModel.swift */,
 			);
@@ -145,6 +166,10 @@
 		1A0000371A000024 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				5F9B3D102F20D91C0006BEC5 /* SupabaseClient.swift */,
+				5F9B3D0E2F20D9110006BEC5 /* RealtimeService.swift */,
+				5F9B3D0C2F20D9060006BEC5 /* CloudSyncService.swift */,
+				5F9B3D0A2F20D8FB0006BEC5 /* AuthService.swift */,
 				1A0000191A000010 /* CategoryDetector.swift */,
 				1A0000811A000081 /* ProductSuggestions.swift */,
 			);
@@ -157,6 +182,35 @@
 				1A0000051A000003 /* Assets.xcassets */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		1A0000601A000060 /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				1A0000511A000050 /* ShoppingListEntity+CoreDataClass.swift */,
+				1A0000531A000051 /* ShoppingListEntity+CoreDataProperties.swift */,
+				1A0000551A000052 /* ShoppingItemEntity+CoreDataClass.swift */,
+				1A0000571A000053 /* ShoppingItemEntity+CoreDataProperties.swift */,
+			);
+			path = CoreData;
+			sourceTree = "<group>";
+		};
+		5F9B3D032F20CED30006BEC5 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				5F9B3CFF2F20CED30006BEC5 /* AuthRootView.swift */,
+				5F9B3D002F20CED30006BEC5 /* LoginView.swift */,
+				5F9B3D012F20CED30006BEC5 /* ProfileView.swift */,
+				5F9B3D022F20CED30006BEC5 /* RegisterView.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		5F9B3D162F20E2750006BEC5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -187,7 +241,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 2620;
 				TargetAttributes = {
 					1A0000391A000026 = {
 						CreatedOnToolsVersion = 15.0;
@@ -204,6 +258,9 @@
 				Base,
 			);
 			mainGroup = 1A0000301A000017;
+			packageReferences = (
+				5F9B3D142F20DAEA0006BEC5 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
 			productRefGroup = 1A0000321A000019 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -229,10 +286,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5F9B3D1A2F20E5D60006BEC5 /* ShareListView.swift in Sources */,
 				1A0000001A000001 /* ShoppingListApp.swift in Sources */,
 				1A0000021A000002 /* ContentView.swift in Sources */,
 				1A0000061A000004 /* Category.swift in Sources */,
 				1A0000081A000005 /* ShoppingList.swift in Sources */,
+				5F9B3D152F20DEB90006BEC5 /* RealtimeService.swift in Sources */,
 				1A0000101A000006 /* ShoppingItem.swift in Sources */,
 				1A0000121A000007 /* ListsView.swift in Sources */,
 				1A0000141A000008 /* ItemsView.swift in Sources */,
@@ -240,12 +299,21 @@
 				1A0000181A000010 /* CategoryDetector.swift in Sources */,
 				1A0000801A000080 /* ProductSuggestions.swift in Sources */,
 				1A0000201A000011 /* DataController.swift in Sources */,
+				5F9B3D0D2F20D9060006BEC5 /* CloudSyncService.swift in Sources */,
+				5F9B3D042F20CED30006BEC5 /* RegisterView.swift in Sources */,
+				5F9B3D052F20CED30006BEC5 /* ProfileView.swift in Sources */,
+				5F9B3D062F20CED30006BEC5 /* LoginView.swift in Sources */,
+				5F9B3D072F20CED30006BEC5 /* AuthRootView.swift in Sources */,
+				5F9B3D0B2F20D8FB0006BEC5 /* AuthService.swift in Sources */,
 				1A0000221A000012 /* ShoppingListModel.xcdatamodeld in Sources */,
+				5F9B3D132F20DA330006BEC5 /* CloudItemsView.swift in Sources */,
 				1A0000241A000013 /* ListsViewModel.swift in Sources */,
+				5F9B3D092F20D6F40006BEC5 /* AuthViewModel.swift in Sources */,
 				1A0000261A000014 /* ItemsViewModel.swift in Sources */,
 				1A0000501A000050 /* ShoppingListEntity+CoreDataClass.swift in Sources */,
 				1A0000521A000051 /* ShoppingListEntity+CoreDataProperties.swift in Sources */,
 				1A0000541A000052 /* ShoppingItemEntity+CoreDataClass.swift in Sources */,
+				5F9B3D112F20D91C0006BEC5 /* SupabaseClient.swift in Sources */,
 				1A0000561A000053 /* ShoppingItemEntity+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -258,6 +326,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -288,6 +357,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = GDAN75K2A4;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -311,6 +381,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -321,6 +392,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -351,6 +423,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = GDAN75K2A4;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -367,6 +440,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -379,8 +453,8 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = GDAN75K2A4;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ShoppingList/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Список покупок";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -407,8 +481,8 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = GDAN75K2A4;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ShoppingList/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Список покупок";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -451,6 +525,25 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		5F9B3D142F20DAEA0006BEC5 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5F9B3D172F20E2750006BEC5 /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5F9B3D142F20DAEA0006BEC5 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
+
 /* Begin XCVersionGroup section */
 		1A0000231A000012 /* ShoppingListModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
@@ -461,12 +554,6 @@
 			path = ShoppingListModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
-		};
-		1A0000701A000070 /* ShoppingListModel.xcdatamodel */ = {
-			isa = PBXFileReference;
-			lastKnownFileType = wrapper.xcdatamodel;
-			path = ShoppingListModel.xcdatamodel;
-			sourceTree = "<group>";
 		};
 /* End XCVersionGroup section */
 	};

@@ -1,13 +1,34 @@
 import SwiftUI
+import Supabase
 
 @main
 struct ShoppingListApp: App {
-    @StateObject private var dataController = DataController.shared
+    @State private var showURLError = false
+    @State private var urlErrorMessage = ""
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, dataController.container.viewContext)
+            AuthRootView()
+                .onOpenURL { url in
+                    print("📱 Received URL: \(url.absoluteString)")
+                    Task {
+                        do {
+                            try await supabase.auth.session(from: url)
+                            print("✅ Session created from URL")
+                        } catch {
+                            print("❌ Error handling auth URL: \(error)")
+                            await MainActor.run {
+                                urlErrorMessage = error.localizedDescription
+                                showURLError = true
+                            }
+                        }
+                    }
+                }
+                .alert("Ошибка авторизации", isPresented: $showURLError) {
+                    Button("OK", role: .cancel) { }
+                } message: {
+                    Text(urlErrorMessage)
+                }
         }
     }
 }

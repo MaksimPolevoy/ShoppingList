@@ -5,26 +5,39 @@ extension Notification.Name {
 }
 
 struct ListsView: View {
-    @StateObject private var viewModel = ListsViewModel()
+    @StateObject private var syncService = CloudSyncService.shared
     @State private var showingAddList = false
+    @State private var showingJoinList = false
     @State private var newListName = ""
     @State private var navigationPath = NavigationPath()
+    @State private var listCounts: [UUID: (remaining: Int, checked: Int)] = [:]
+    @State private var selectedListForSharing: CloudShoppingList?
+    @State private var isLoading = false
+    @State private var errorMessage: String?
+    @State private var showError = false
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         NavigationStack(path: $navigationPath) {
             Group {
-                if viewModel.lists.isEmpty {
+                if syncService.lists.isEmpty && !isLoading {
                     emptyStateView
                 } else {
                     listView
                 }
             }
             .navigationTitle("Списки покупок")
-            .navigationDestination(for: ShoppingListEntity.self) { list in
-                ItemsView(list: list)
+            .navigationDestination(for: CloudShoppingList.self) { list in
+                CloudItemsView(list: list)
             }
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        showingJoinList = true
+                    } label: {
+                        Image(systemName: "person.badge.plus")
+                    }
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         showingAddList = true
@@ -44,23 +57,42 @@ struct ListsView: View {
             } message: {
                 Text("Введите название для нового списка")
             }
-            .onAppear {
-                viewModel.fetchLists()
+            .alert("Ошибка", isPresented: $showError) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(errorMessage ?? "Неизвестная ошибка")
             }
-            .onReceive(NotificationCenter.default.publisher(for: .shoppingListDataChanged)) { _ in
-                DispatchQueue.main.async {
-                    viewModel.fetchLists()
-                }
+            .sheet(isPresented: $showingJoinList) {
+                JoinListView()
+            }
+            .sheet(item: $selectedListForSharing) { list in
+                ShareListView(list: list)
+            }
+            .task {
+                await fetchLists()
             }
             .onChange(of: navigationPath) { newPath in
-                // Refresh when navigating back (path becomes empty)
                 if newPath.isEmpty {
-                    viewModel.fetchLists()
+                    Task {
+                        await fetchLists()
+                    }
                 }
             }
             .onChange(of: scenePhase) { newPhase in
                 if newPhase == .active {
-                    viewModel.fetchLists()
+                    Task {
+                        await fetchLists()
+                    }
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .shoppingListDataChanged)) { _ in
+                Task {
+                    await fetchLists()
+                }
+            }
+            .overlay {
+                if isLoading && syncService.lists.isEmpty {
+                    ProgressView("Загрузка...")
                 }
             }
         }
@@ -87,22 +119,67 @@ struct ListsView: View {
                     .font(.headline)
             }
             .buttonStyle(.borderedProminent)
+
+            Button {
+                showingJoinList = true
+            } label: {
+                Label("Присоединиться к списку", systemImage: "person.badge.plus")
+                    .font(.subheadline)
+            }
+            .padding(.top, 8)
         }
         .padding()
     }
 
     private var listView: some View {
         List {
-            ForEach(viewModel.lists, id: \.id) { list in
+            ForEach(syncService.lists) { list in
                 NavigationLink(value: list) {
-                    ListRowView(list: list, viewModel: viewModel)
+                    CloudListRowView(
+                        list: list,
+                        counts: listCounts[list.id] ?? (0, 0),
+                        onShare: {
+                            selectedListForSharing = list
+                        }
+                    )
+                }
+                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    Button(role: .destructive) {
+                        deleteList(list)
+                    } label: {
+                        Label("Удалить", systemImage: "trash")
+                    }
+
+                    Button {
+                        selectedListForSharing = list
+                    } label: {
+                        Label("Поделиться", systemImage: "square.and.arrow.up")
+                    }
+                    .tint(.blue)
                 }
             }
-            .onDelete(perform: viewModel.deleteList)
         }
         .refreshable {
-            viewModel.fetchLists()
+            await fetchLists()
         }
+    }
+
+    private func fetchLists() async {
+        isLoading = true
+        do {
+            let lists = try await syncService.fetchLists()
+
+            // Fetch counts for each list
+            var counts: [UUID: (remaining: Int, checked: Int)] = [:]
+            for list in lists {
+                counts[list.id] = try await syncService.getItemCounts(for: list.id)
+            }
+            listCounts = counts
+        } catch {
+            errorMessage = error.localizedDescription
+            showError = true
+        }
+        isLoading = false
     }
 
     private func createList() {
@@ -110,44 +187,70 @@ struct ListsView: View {
             newListName = ""
             return
         }
-        _ = DataController.shared.createList(name: newListName.trimmingCharacters(in: .whitespaces))
+
+        let name = newListName.trimmingCharacters(in: .whitespaces)
         newListName = ""
-        viewModel.fetchLists()
+
+        Task {
+            do {
+                _ = try await syncService.createList(name: name)
+            } catch {
+                errorMessage = error.localizedDescription
+                showError = true
+            }
+        }
+    }
+
+    private func deleteList(_ list: CloudShoppingList) {
+        Task {
+            do {
+                // If it's a shared list and user is not owner, leave it
+                if list.isShared == true {
+                    try await syncService.leaveList(list.id)
+                } else {
+                    try await syncService.deleteList(list)
+                }
+            } catch {
+                errorMessage = error.localizedDescription
+                showError = true
+            }
+        }
     }
 }
 
-struct ListRowView: View {
-    let list: ShoppingListEntity
-    let viewModel: ListsViewModel
-
-    private var counts: (remaining: Int, checked: Int) {
-        guard let id = list.id else { return (0, 0) }
-        return viewModel.listCounts[id] ?? (0, 0)
-    }
+struct CloudListRowView: View {
+    let list: CloudShoppingList
+    let counts: (remaining: Int, checked: Int)
+    let onShare: () -> Void
 
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text(list.name ?? "Без названия")
-                    .font(.headline)
+                HStack(spacing: 6) {
+                    Text(list.name)
+                        .font(.headline)
+
+                    if list.isShared == true {
+                        Image(systemName: "person.2.fill")
+                            .font(.caption)
+                            .foregroundColor(.blue)
+                    }
+                }
 
                 HStack(spacing: 8) {
-                    let remaining = counts.remaining
-                    let checked = counts.checked
-
-                    if remaining > 0 {
-                        Label("\(remaining) осталось", systemImage: "circle")
+                    if counts.remaining > 0 {
+                        Label("\(counts.remaining) осталось", systemImage: "circle")
                             .font(.caption)
                             .foregroundColor(.primary)
                     }
 
-                    if checked > 0 {
-                        Label("\(checked) куплено", systemImage: "checkmark.circle.fill")
+                    if counts.checked > 0 {
+                        Label("\(counts.checked) куплено", systemImage: "checkmark.circle.fill")
                             .font(.caption)
                             .foregroundColor(.green)
                     }
 
-                    if remaining == 0 && checked == 0 {
+                    if counts.remaining == 0 && counts.checked == 0 {
                         Text("Пустой список")
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -159,13 +262,12 @@ struct ListRowView: View {
 
             // Progress indicator
             let total = counts.remaining + counts.checked
-            let checked = counts.checked
             if total > 0 {
                 ZStack {
                     Circle()
                         .stroke(Color.gray.opacity(0.3), lineWidth: 3)
                     Circle()
-                        .trim(from: 0, to: CGFloat(checked) / CGFloat(total))
+                        .trim(from: 0, to: CGFloat(counts.checked) / CGFloat(total))
                         .stroke(Color.green, style: StrokeStyle(lineWidth: 3, lineCap: .round))
                         .rotationEffect(.degrees(-90))
                 }
@@ -173,10 +275,10 @@ struct ListRowView: View {
             }
         }
         .padding(.vertical, 4)
+        .contentShape(Rectangle())
     }
 }
 
 #Preview {
     ListsView()
-        .environment(\.managedObjectContext, DataController.preview.container.viewContext)
 }
